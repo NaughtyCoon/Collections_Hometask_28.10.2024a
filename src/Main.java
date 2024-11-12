@@ -67,33 +67,37 @@ public class Main {
         System.out.println("\nВсего уникальных записей:");
         System.out.println(myHashMap.size());
 
-        //System.out.println(myHashMap);
         System.out.println("\nЧастота обнаружения записей:");
         TreeMap<String, Integer> treeMap = new TreeMap<>(myHashMap);
         System.out.println(treeMap);
 
-        ArrayList<String> topWords1 = new ArrayList<>();
-        ArrayList<String> topWords2 = new ArrayList<>();
-        topWords1.addAll(keys);
-        int listCount = 1;
+        int listCount = 1;  // В этой переменной будет храниться частота, с которой слова встречаются в строке.
+
+        List<String> topWords1 = List.of(); // Вспомогательный массив для сохранения выборки из keys - слов,
+                                            // частота которых больше, чем текущее значение listCount.
+        topWords1 = List.of(String.valueOf(keys)); // Инициализируем вспомогательный массив загрузкой полного списка keys.
+        List<String> topWords2 = List.of(); // Здесь будет храниться предыдущая выборка значений по частоте.
         do {
-            topWords2.clear();
-            topWords2.addAll(topWords1);
-            topWords1.clear();
-            int finalListCount = listCount;
-            //System.out.println("forEach: " + x);
-            keys.stream()
+            topWords2 = topWords1;  // Перед созданием новой выборки при переходе на более высокую частоту
+                                    // сохраним текущую выборку во вспомогательный список topWords2.
+
+            int finalListCount = listCount; // Применим вспомогательную переменную,
+                                            // потому что лямбда-функция требует final-величину.
+
+            topWords1 = keys.stream()
                     .filter(s -> {
-                        return myHashMap.get(s) > finalListCount;
+                        return myHashMap.get(s) > finalListCount;   // Берём в topWords1 только слова, встреченные более,
+                                                                    // чем finalListCount раз.
                     })
-                    .forEach(topWords1::add);
+                    .toList();
+
             listCount++;                // Начиная с частоты 2 последовательно проверяем более высокие частоты,
         }while (topWords1.size() > 3);  // пока наш список не сузится до ТОП3.
 
-        // ТОП-3 можно составить невсегда, например, когда третье место делят несколько записей.
+        // ТОП-3 можно составить не всегда, например, когда третье место делят несколько записей.
         // Тогда ТОП слов по частоте выйдет за пределы размера в 3 слова. Ниже разбираемся с этим:
         System.out.println("\nНаиболее часто встречаются слова:");
-        System.out.println((topWords1.size()==3)? topWords1 : topWords2);
+        System.out.println((topWords1.size()==3) ? topWords1 : topWords2);
     }
 
 }
